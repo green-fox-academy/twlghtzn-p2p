@@ -18,11 +18,16 @@ fellow Green Foxers*
 
 #### Use environment variables
 * About environment variables: [Windows](https://www.youtube.com/watch?v=bEroNNzqlF4), [Linux + Mac](https://www.youtube.com/watch?v=pjh9rU9h22Q)
-* Reading environment variables in java: [This article](https://docs.oracle.com/javase/tutorial/essential/environment/env.html)
-* Try your environment variables on heroku as well: [This article](https://devcenter.heroku.com/articles/config-vars)
-* Create a `CHAT_APP_DB_URL` environment variable that stores the url to the local or remote database
-* Create a `CHAT_APP_DB_USERNAME` environment variable that stores the username to the local or remote database
-* Create a `CHAT_APP_DB_PASSWORD` environment variable that stores the password to the local or remote database
+  * **Java**
+    * Reading environment variables in java: [This article](https://docs.oracle.com/javase/tutorial/essential/environment/env.html)
+    * Try your environment variables on heroku as well: [This article](https://devcenter.heroku.com/articles/config-vars)
+    * Create a `CHAT_APP_DB_URL` environment variable that stores the url to the local or remote database
+    * Create a `CHAT_APP_DB_USERNAME` environment variable that stores the username to the local or remote database
+    * Create a `CHAT_APP_DB_PASSWORD` environment variable that stores the password to the local or remote database
+  * **C#**
+    * Reading environment variables in C#: [This article](https://docs.microsoft.com/en-us/dotnet/api/system.environment.getenvironmentvariable)
+    * Try your environment variables on Azure as well: [This article](https://blogs.msdn.microsoft.com/waws/2018/06/12/asp-net-core-settings-for-azure-app-service/)
+    * Create and use a Connection String to access SQL Server
 
 #### Development environment
 
@@ -31,8 +36,8 @@ fellow Green Foxers*
 
 #### Production environment
 
-* Host: Heroku
-* Database: Postgre database on Heroku
+* Host: Heroku or Azure
+* Database: Postgre database on Heroku or SQL Server on Azure
 
 e.g:
 
@@ -48,8 +53,8 @@ Create a main page containing a heading that is accessible from the `/` route.
 
 ### Logging
 
-Each http request should be logged to the standard out (`System.out.println()`). Also if any error has happened in the routes
-it should log the error to the standard error (`System.err.println()`).
+Each http request should be logged to the standard out (`System.out.println()` in Java or `Console.WriteLine()` in C#). Also if any error has happened in the routes
+it should log the error to the standard error (`System.err.println()` in Java or `Console.Error.WriteLine()` in C#).
 A log message should have the following fields:
 
  - **Path**: The path of the endpoint like: `/`
@@ -61,10 +66,16 @@ A log message should have the following fields:
 The log should look like this:
 `2017-05-16 21:47:19.040 INFO Request /message POST text=apple`
 
-The logs should be configurable by an environment variable called `CHAT_APP_LOGLEVEL`. If this variable is set to `ERROR` it should only print the error messages, any other cases it should print both error and info level mesages.
+The logs should be configurable by an environment variable called `CHAT_APP_LOGLEVEL`. If this variable is set to `ERROR` it should only print the error messages, any other cases it should print both error and info level messages.
+
+#### Read the logs in Heroku
 
 [Read the logs](https://devcenter.heroku.com/articles/logging) on heroku not just on your local machine, to
-achive it first install the [heroku toolbelt](https://devcenter.heroku.com/articles/heroku-cli)
+achieve it first install the [heroku toolbelt](https://devcenter.heroku.com/articles/heroku-cli)
+
+#### Read the logs in Azure
+
+[Enable and read the logs](https://docs.microsoft.com/en-us/azure/app-service/web-sites-enable-diagnostic-log) on Azure not just on your local machine but using the Azure Portal.
 
 ### Client Id, Peer address
 
@@ -163,27 +174,41 @@ object like this:
 }
 ```
 
-This method will be called by other applications, so don't forget to add `@CrossOrigin("*")` to your method!
+Add a refresh link to your application:
+![refresh](assets/refresh.png)
+
+### Create automated tests
+
+#### Java Spring
 
 Please test your endpoint using MockMvc.
 You can even check your database in the tests using the following method
 described in [this article](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html#boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test).
 
-Add a refresh link to your application:
-![refresh](assets/refresh.png)
+#### C# ASP.NET
+
+Please test your endpoint using `WebApplicationFactory`. You can even use the [in-memory database with EF Core](https://docs.microsoft.com/en-us/ef/core/miscellaneous/testing/in-memory) to test.
 
 ### Broadcast new message
 
 When the user posts a new message on the page the application should broadcast that message to
 the stored address. It should send an HTTP request to `/api/message/receive` endpoint on the configured address.
+
+The request should send your client id (stored in `CHAT_APP_UNIQUE_ID`) and the message object.
+
+#### Java
+
 Either you can use the [RestTemplate](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/client/RestTemplate.html)
 object which is already included in spring-boot or the [Retrofit](http://square.github.io/retrofit/) library what we previously tried out on gradle day.
-The request should send your client id (stored in `CHAT_APP_UNIQUE_ID`) and the message object.
+
+#### C#
+
+Use the `HttpClient` to send an HTTP request: https://blog.jayway.com/2012/03/13/httpclient-makes-get-and-post-very-simple/
 
 ### Forward received message
 
 When the application receives a message from a peer, and the message is not originally broadcasted by the application,
-then it should forward the message to the stored peer (`CHAT_APP_PEER_ADDRESS`) by submiting an HTTP request to its `/api/message/receive` endpoint.
+then it should forward the message to the stored peer (`CHAT_APP_PEER_ADDRESS`) by submitting an HTTP request to its `/api/message/receive` endpoint.
 All message and client details should be the same as the received message.
 If the message was broadcasted originally by the application, than it should not forward the message again.
 
@@ -197,7 +222,7 @@ The goal is to make a circle from each of the applications written by the Green 
 
 ### Better looking Main page
 
-Make the main page pretty using bootsrap.
+Make the main page pretty using bootstrap.
 Your page should look like this:
 
 ![pretty](assets/pretty.png)
@@ -220,10 +245,12 @@ Your page should look like this:
 - The refreshing every now and then is not the perfect solution, the page should refresh exactly when a new message arrives
 - In order to do that you need to have a direct connection between your server and every single browser that currently has the page open (aka client)
 - We can do that with websockets (this is exactly how web based chat applications work)
-- Check it out: https://spring.io/guides/gs/messaging-stomp-websocket/
+- Check it out:
+  - Java Spring: [STOMP messaging](https://spring.io/guides/gs/messaging-stomp-websocket/)
+  - C# ASP.NET: [Use SignalR](https://www.asp.net/signalr)
 
 ### List of users
 
-Create a list on the main page that shows all the usernames that occured in
+Create a list on the main page that shows all the usernames that occurred in
 the messages. All the usernames should be marked that has written a message less
 than 10 minutes ago.
