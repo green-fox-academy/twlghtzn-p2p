@@ -26,4 +26,24 @@ public class LogService {
     String ldt = String.valueOf(date);
     return ldt.replace('T', ' ');
   }
+
+  public String buildLogForMain(String requestParams) {
+    return renderLogEntryForDisplay(new LogEntry(LocalDateTime.now(),
+        "INFO", "Request", "/", "GET", requestParams));
+  }
+
+  public String buildLogForRegisterGet(String requestParams) {
+    return renderLogEntryForDisplay(new LogEntry(LocalDateTime.now(),
+        "INFO", "Request", "/register", "GET", requestParams));
+  }
+
+  public String buildLogForRegisterPost(String requestParams) {
+    return renderLogEntryForDisplay(new LogEntry(LocalDateTime.now(),
+        "INFO", "Request", "/register", "POST", requestParams));
+  }
+
+  public String buildLogForUpdate(String requestParams) {
+    return renderLogEntryForDisplay(new LogEntry(LocalDateTime.now(),
+        "INFO", "Request", "/update", "POST", requestParams));
+  }
 }
