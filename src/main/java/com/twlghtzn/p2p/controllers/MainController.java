@@ -28,10 +28,12 @@ public class MainController {
   @GetMapping("/")
   public String showMainPage(Model model) {
     if (model.getAttribute("user") == null) {
-      System.out.println(logService.buildLogForMain(""));
       if (userService.isUserPresent()) {
+        System.out.println(logService.buildLogForMain("info=emptyInput"));
         model.addAttribute("info", "emptyInput");
         model.addAttribute("name", userService.getUsersName());
+      } else {
+        System.out.println(logService.buildLogForMain(""));
       }
     } else {
       String userName = (String) model.getAttribute("user");
