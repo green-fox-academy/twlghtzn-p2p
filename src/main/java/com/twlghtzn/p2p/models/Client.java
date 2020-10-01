@@ -7,10 +7,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 
-@Table(name = "user")
 @NoArgsConstructor
+@Table(name = "clients")
 @Entity
-public class User {
+public class Client {
 
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id
@@ -18,13 +18,21 @@ public class User {
   private String name;
   private String uniqueId;
 
-  public User(String name) {
+  public Client(String name, String uniqueId) {
     this.name = name;
-    uniqueId = System.getenv("CHAT_APP_UNIQUE_ID");
+    this.uniqueId = uniqueId;
+  }
+
+  public long getId() {
+    return id;
   }
 
   public String getName() {
     return name;
+  }
+
+  public String getUniqueId() {
+    return uniqueId;
   }
 
   public void setName(String name) {

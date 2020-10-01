@@ -1,15 +1,12 @@
 package com.twlghtzn.p2p.controllers;
 
-import com.twlghtzn.p2p.models.LogEntry;
-import com.twlghtzn.p2p.models.User;
 import com.twlghtzn.p2p.services.LogService;
+import com.twlghtzn.p2p.services.MessageService;
 import com.twlghtzn.p2p.services.UserService;
-import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -18,11 +15,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class MainController {
   private LogService logService;
   private UserService userService;
+  private MessageService messageService;
 
   @Autowired
-  public MainController(LogService logService, UserService userService) {
+  public MainController(LogService logService, UserService userService,
+                        MessageService messageService) {
     this.logService = logService;
     this.userService = userService;
+    this.messageService = messageService;
   }
 
   @GetMapping("/")
@@ -39,8 +39,18 @@ public class MainController {
       String userName = (String) model.getAttribute("user");
       System.out.println(logService.buildLogForMain("user=" + userName));
       model.addAttribute("name", userName);
+      model.addAttribute("messages", messageService.getAllMessages());
     }
     return "index";
+  }
+
+  @PostMapping("/")
+  public String addAMessage(RedirectAttributes attributes,
+                            @RequestParam(name = "text") String text) {
+    System.out.println(logService.buildLogForMainPost("text=" + text));
+    messageService.addNewUserMessage(text);
+    attributes.addFlashAttribute("user", userService.getUsersName());
+    return "redirect:/";
   }
 
   @GetMapping("/register")

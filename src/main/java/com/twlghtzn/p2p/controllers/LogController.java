@@ -9,6 +9,4 @@ public class LogController {
   @Autowired
   public LogController() {
   }
-
-
 }

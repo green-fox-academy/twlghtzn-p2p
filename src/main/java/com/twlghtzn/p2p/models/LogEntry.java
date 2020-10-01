@@ -49,28 +49,4 @@ public class LogEntry {
   public String getRequestParams() {
     return requestParams;
   }
-
-  public void setDate(LocalDateTime date) {
-    this.date = date;
-  }
-
-  public void setLevel(String level) {
-    this.level = level;
-  }
-
-  public void setText(String text) {
-    this.text = text;
-  }
-
-  public void setEndpoint(String endpoint) {
-    this.endpoint = endpoint;
-  }
-
-  public void setRequestType(String requestType) {
-    this.requestType = requestType;
-  }
-
-  public void setRequestParams(String requestParams) {
-    this.requestParams = requestParams;
-  }
 }

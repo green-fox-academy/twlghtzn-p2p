@@ -13,13 +13,12 @@ public class LogService {
   }
 
   public String renderLogEntryForDisplay(LogEntry logEntry) {
-    String log = getTimeStamp(logEntry.getDate()) + " " +
+    return getTimeStamp(logEntry.getDate()) + " " +
         logEntry.getLevel() + " " +
         logEntry.getText() + " " +
         logEntry.getEndpoint() + " " +
         logEntry.getRequestType() + " " +
         logEntry.getRequestParams();
-    return log;
   }
 
   public String getTimeStamp(LocalDateTime date) {
@@ -45,5 +44,10 @@ public class LogService {
   public String buildLogForUpdate(String requestParams) {
     return renderLogEntryForDisplay(new LogEntry(LocalDateTime.now(),
         "INFO", "Request", "/update", "POST", requestParams));
+  }
+
+  public String buildLogForMainPost(String requestParams) {
+    return renderLogEntryForDisplay(new LogEntry(LocalDateTime.now(),
+        "INFO", "Request", "/", "POST", requestParams));
   }
 }
