@@ -15,7 +15,7 @@ public class ClientService {
     this.clientRepository = clientRepository;
   }
 
-  public void updateClientAddIfNew(String name, String uniqueId) {
+  public Client updateClientAddIfNew(String name, String uniqueId) {
     if (getClient(uniqueId).isPresent()) {
       Client client = clientRepository.findClientByUniqueId(uniqueId);
       if (!client.getName().equals(name)) {
@@ -25,10 +25,15 @@ public class ClientService {
     } else {
       clientRepository.save(new Client(name, uniqueId));
     }
+    return clientRepository.findClientByUniqueId(uniqueId);
   }
 
   public Optional<Client> getClient(String uniqueId) {
     return clientRepository.findByUniqueId(uniqueId);
+  }
+
+  public Client findUserClient() {
+    return clientRepository.findClientByUniqueId(System.getenv("CHAT_APP_UNIQUE_ID"));
   }
 
 }

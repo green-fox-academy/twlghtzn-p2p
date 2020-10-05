@@ -1,9 +1,14 @@
 package com.twlghtzn.p2p.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 
@@ -14,9 +19,14 @@ public class Client {
 
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id
+  @JsonIgnore
   private long id;
+  @JsonIgnore
   private String name;
   private String uniqueId;
+  @JsonIgnore
+  @OneToMany(cascade = CascadeType.REFRESH)
+  private List<Message> messages;
 
   public Client(String name, String uniqueId) {
     this.name = name;
@@ -31,6 +41,7 @@ public class Client {
     return name;
   }
 
+  @JsonProperty("id")
   public String getUniqueId() {
     return uniqueId;
   }

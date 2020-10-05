@@ -8,4 +8,6 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 
   @Override
   List<Message> findAll();
+
+  Message findMessageById(long id);
 }
